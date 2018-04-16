@@ -37,7 +37,7 @@
 			'bad_request' => [ 'code' => 'bad_request', 'msg' => 'Uno o más datos enviados no cumplen los requisitos', 'httpStatus' => 400 ]
 		];
 		
-		public function __construct( $msg = null, $code = null, $httpStatus = null, $details = null, $data = null ) {
+		public function __construct( $data = null, $msg = null, $code = null, $httpStatus = null, $details = null ) {
 			
 			$this->details    = $details;
 			$this->msg        = $msg ? $msg : $this->tpls['success']['msg'];
@@ -46,7 +46,7 @@
 			$this->data       = $data;
 		}
 		
-		public function toAdditional( $data = null ) {
+		public function getStatusData() {
 			$response = [
 				'status' => [
 					'code'    => $this->code,
@@ -55,9 +55,21 @@
 					'errors'  => $this->errors
 				]
 			];
-			if ( $data ) {
-				$response['data'] = $data;
-			}
+			
+			return $response;
+		}
+		
+		public function getResponseData()
+		{
+			$response = [
+				'data' => $this->data,
+				'status' => [
+					'code'    => $this->code,
+					'msg'     => $this->msg,
+					'details' => $this->details,
+					'errors'  => $this->errors
+				]
+			];
 			
 			return $response;
 		}
@@ -76,14 +88,18 @@
 			if ( $template ) {
 				$this->loadTemplate( $template, $msg, $details );
 			}
-			
-			return response( $this->toAdditional( $data ), $this->httpStatus, $this->headers );
+			$this->data = $data;
+			if(function_exists('response'))
+			{
+				return response( $this->getResponseData(), $this->httpStatus, $this->headers );
+			}else{
+				return $this->getResponseData();
+			}
 		}
 		
-		static function make( $msg = null, $code = null, $httpStatus = null, $details = null, $data = null ) {
-			$status = new ApiResponse( $msg, $code, $httpStatus, $details );
-			
-			return $status->toAdditional( $data );
+		static function make( $data = null, $msg = null, $code = null, $httpStatus = null, $details = null ) {
+			$status = new ApiResponse( $data, $msg, $code, $httpStatus, $details );
+			return $status;
 		}
 		
 		public function registerError( $errorMsg ) {
