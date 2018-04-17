@@ -88,7 +88,9 @@
 			if ( $template ) {
 				$this->loadTemplate( $template, $msg, $details );
 			}
-			$this->data = $data;
+			if($data)
+				$this->data = $data;
+			
 			if(function_exists('response'))
 			{
 				return response( $this->getResponseData(), $this->httpStatus, $this->headers );
