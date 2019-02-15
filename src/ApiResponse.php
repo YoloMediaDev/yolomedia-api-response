@@ -13,7 +13,7 @@
 		public $msg;
 		public $details;
 		public $errors = [];
-		public $httpStatus;
+		public $status;
 		public $headers = [];
 		public $data;
 		
@@ -27,23 +27,23 @@
 		public static $BAD_REQUEST = 'bad_request';
 		
 		private $tpls = [
-			'success'     => [ 'code' => 'success', 'msg' => 'Petición correcta', 'httpStatus' => 200 ],
-			'error'       => [ 'code' => 'error', 'msg' => 'Ocurrió un problema al realizar tu petición', 'httpStatus' => 500 ],
-			'not_found'   => [ 'code' => 'error', 'msg' => 'No pudimos encontrar este item, por favor prueba nuevamente', 'httpStatus' => 404 ],
-			'need_params' => [ 'code' => 'error', 'msg' => 'Algúnos parametros necesario no fueron recibidos', 'httpStatus' => 400 ],
-			'edited'      => [ 'code' => 'success', 'msg' => 'Los cambios fueron guardados correctamente', 'httpStatus' => 200 ],
-			'created'     => [ 'code' => 'success', 'msg' => 'El registro fué creado', 'httpStatus' => 201 ],
-			'deleted'     => [ 'code' => 'success', 'msg' => 'El registro fué eliminado', 'httpStatus' => 200 ],
-			'bad_request' => [ 'code' => 'bad_request', 'msg' => 'Uno o más datos enviados no cumplen los requisitos', 'httpStatus' => 400 ]
+			'success'     => [ 'code' => 'success', 'msg' => 'Petición correcta', 'status' => 200 ],
+			'error'       => [ 'code' => 'error', 'msg' => 'Ocurrió un problema al realizar tu petición', 'status' => 500 ],
+			'not_found'   => [ 'code' => 'error', 'msg' => 'No pudimos encontrar este item, por favor prueba nuevamente', 'status' => 404 ],
+			'need_params' => [ 'code' => 'error', 'msg' => 'Algúnos parametros necesario no fueron recibidos', 'status' => 400 ],
+			'edited'      => [ 'code' => 'success', 'msg' => 'Los cambios fueron guardados correctamente', 'status' => 200 ],
+			'created'     => [ 'code' => 'success', 'msg' => 'El registro fué creado', 'status' => 201 ],
+			'deleted'     => [ 'code' => 'success', 'msg' => 'El registro fué eliminado', 'status' => 200 ],
+			'bad_request' => [ 'code' => 'bad_request', 'msg' => 'Uno o más datos enviados no cumplen los requisitos', 'status' => 400 ]
 		];
 		
-		public function __construct( $data = null, $msg = null, $code = null, $httpStatus = null, $details = null ) {
+		public function __construct( $data = null, $msg = null, $code = null, $status = null, $details = null ) {
 			
-			$this->details    = $details;
-			$this->msg        = $msg ? $msg : $this->tpls['success']['msg'];
-			$this->code       = $code ? $code : $this->tpls['success']['code'];
-			$this->httpStatus = $httpStatus ? $httpStatus : $this->tpls['success']['httpStatus'];
-			$this->data       = $data;
+			$this->details	= $details;
+			$this->msg		= $msg ? $msg : $this->tpls['success']['msg'];
+			$this->code		= $code ? $code : $this->tpls['success']['code'];
+			$this->status	= $status ? $status : $this->tpls['success']['status'];
+			$this->data		= $data;
 		}
 		
 		public function getStatusData() {
@@ -80,7 +80,7 @@
 			if ( isset( $this->tpls[ $template ] ) ) {
 				$this->msg        = $msg ? $msg : $this->tpls[ $template ]['msg'];
 				$this->code       = $this->tpls[ $template ]['code'];
-				$this->httpStatus = $this->tpls[ $template ]['httpStatus'];
+				$this->status = $this->tpls[ $template ]['status'];
 			}
 		}
 		
@@ -93,14 +93,14 @@
 			
 			if(function_exists('response'))
 			{
-				return response( $this->getResponseData(), $this->httpStatus, $this->headers );
+				return response( $this->getResponseData(), $this->status, $this->headers );
 			}else{
 				return $this->getResponseData();
 			}
 		}
 		
-		static function make( $data = null, $msg = null, $code = null, $httpStatus = null, $details = null ) {
-			$status = new ApiResponse( $data, $msg, $code, $httpStatus, $details );
+		static function make( $data = null, $msg = null, $code = null, $status = null, $details = null ) {
+			$status = new ApiResponse( $data, $msg, $code, $status, $details );
 			return $status;
 		}
 		
